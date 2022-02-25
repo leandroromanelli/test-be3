@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "be3testapi.fullname" . }}
+  labels:
+    app: {{ template "be3testapi.name" . }}
+    chart: {{ template "be3testapi.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "be3testapi.name" . }}
+    release: {{ .Release.Name }}
