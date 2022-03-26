@@ -31,12 +31,12 @@ namespace Be3Test.Infra.Repositories
 
         public List<T> Get()
         {
-            return _context.Set<T>().ToList();
+            return _context.Set<T>().AsNoTracking().ToList();
         }
 
         public T Get(Guid id)
         {
-            return _context.Set<T>().FirstOrDefault(x => x.Id == id);
+            return _context.Set<T>().AsNoTracking().FirstOrDefault(x => x.Id == id);
         }
 
         public void Update(T entity)

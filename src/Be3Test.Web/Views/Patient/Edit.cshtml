@@ -1,0 +1,116 @@
+﻿@model Be3Test.Api.Models.PatientRequestModel
+
+@{
+    ViewBag.Title = "Paciente - Editar";
+}
+
+<h2>Paciente - @Html.DisplayFor(model => model.FirstName)</h2>
+
+<form method="post">
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.MedicalRecord)
+            </th>
+            <th>
+                @Html.TextBoxFor(model => model.MedicalRecord, new {@class = "form-control"})
+            </th>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.TextBoxFor(model => model.FirstName, new {@class = "form-control"})
+            </th>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.TextBoxFor(model => model.LastName, new {@class = "form-control"})
+            </th>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CPF)
+            </th>
+            <th>
+                @Html.TextBoxFor(model => model.CPF, new {@class = "form-control"})
+            </th>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.BirthDate)
+            </th>
+            <th>
+                @Html.EditorFor(model => model.BirthDate, new { type = "date" , @class = "form-control"})
+            </th>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Genre)
+            </th>
+            <th>
+                @Html.DropDownList("Genre", new SelectList(new List<dynamic>(){ new { Id = "Masculino", Name = "Masculino" },
+                                                                                new { Id = "Feminino", Name = "Feminino"}, 
+                                                                                new { Id = "Outro", Name = "Outro"}}, "Id", "Name"), new { @class = "form-control" })
+            </th>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CellPhone)
+            </th>
+            <th>
+                @Html.TextBoxFor(model => model.CellPhone, new {@class = "form-control"})
+            </th>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Phone)
+            </th>
+            <th>
+                @Html.TextBoxFor(model => model.Phone, new {@class = "form-control"})
+            </th>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.TextBoxFor(model => model.Email, new {@class = "form-control"})
+            </th>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.RG)
+            </th>
+            <th>
+                @Html.TextBoxFor(model => model.RG, new {@class = "form-control"})
+            </th>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UfRG)
+            </th>
+            <th>
+                @Html.TextBoxFor(model => model.UfRG, new {@class = "form-control"})
+            </th>
+        </tr>
+    </table>
+    <h5>
+        @Html.DisplayNameFor(model => model.InsuranceCards)
+        | <a href="../../InsuranceCard/Create?patientId=@Model.Id"> Nova </a>
+    </h5>
+    <table class="table">
+        @foreach (var item in Model.InsuranceCards.Where(x => !string.IsNullOrWhiteSpace(x.Number)))
+        {
+            <tr>
+                <th>Numero: @item.Number</th>
+                <th>Validade: @item.Validity.ToString("dd/MM/yyyy")</th>
+            </tr>
+        }
+    </table>
+    <button class="btn btn-primary" value="Save">Salvar</button>
+</form>

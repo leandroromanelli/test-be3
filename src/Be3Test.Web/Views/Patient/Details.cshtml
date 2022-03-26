@@ -1,0 +1,102 @@
+﻿@model Be3Test.Api.Models.PatientResponseModel
+
+@{
+    ViewBag.Title = "Paciente";
+}
+
+<h2>Paciente - @Html.DisplayFor(model => model.FirstName)</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.MedicalRecord)
+        </th>
+        <th>
+            @Html.DisplayFor(model => model.MedicalRecord)
+        </th>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.FirstName)
+        </th>
+        <th>
+            @Html.DisplayFor(model => model.FirstName)
+        </th>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.LastName)
+        </th>
+        <th>
+            @Html.DisplayFor(model => model.LastName)
+        </th>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CPF)
+        </th>
+        <th>
+            @Html.DisplayFor(model => model.CPF)
+        </th>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.BirthDate)
+        </th>
+        <th>
+            @Model.BirthDate.ToString("dd/MM/yyyy")
+        </th>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Genre)
+        </th>
+        <th>
+            @Html.DisplayFor(model => model.Genre)
+        </th>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CellPhone)
+        </th>
+        <th>
+            @Html.DisplayFor(model => model.CellPhone)
+        </th>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Phone)
+        </th>
+        <th>
+            @Html.DisplayFor(model => model.Phone)
+        </th>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th>
+            @Html.DisplayFor(model => model.Email)
+        </th>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.RG)
+        </th>
+        <th>
+            @Html.DisplayFor(model => model.RG)/@Html.DisplayFor(model => model.UfRG)
+        </th>
+    </tr>
+</table>
+<h5>
+    @Html.DisplayNameFor(model => model.InsuranceCards)
+</h5>
+<table class="table">
+    @foreach (var item in Model.InsuranceCards)
+    {
+        <tr>
+            <th>Numero: @item.Number</th>
+            <th>Validade: @item.Validity.ToString("dd/MM/yyyy")</th>
+        </tr>
+    }
+</table>

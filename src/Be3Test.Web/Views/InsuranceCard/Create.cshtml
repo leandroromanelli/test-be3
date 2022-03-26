@@ -1,0 +1,37 @@
+﻿@model Be3Test.Api.Models.InsuranceCardRequestModel
+
+@{
+    ViewBag.Title = "Carteirinhas de Convenio - Nova";
+}
+
+<h2>Carteirinhas de Convenio - Nova</h2>
+
+<form method="post">
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Number)
+            </th>
+            <th>
+                @Html.TextBoxFor(model => model.Number, new {@class = "form-control"})
+            </th>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Validity)
+            </th>
+            <th>
+                @Html.EditorFor(model => model.Validity, new { type = "date" , @class = "form-control"})
+            </th>
+        </tr>
+        <tr>
+            <th>Convenio</th>
+            <th>
+                @Html.DropDownList("InsuranceId", new SelectList(ViewBag.Insurances, "Id", "Name"), new { @class = "form-control" })
+            </th>
+        </tr>
+    </table>
+    <button class="btn btn-primary" value="Save">Salvar</button> &nbsp; 
+    <a href="../Patient/Edit/@Model.PatientId">Voltar</a>
+    @Html.HiddenFor(model => model.PatientId)
+</form>

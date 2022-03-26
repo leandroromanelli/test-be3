@@ -1,5 +1,6 @@
 ﻿using Be3Test.Api.Models.Base;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Be3Test.Api.Models
 {
@@ -9,7 +10,9 @@ namespace Be3Test.Api.Models
         {
         }
 
+        [DisplayName("Nome")]
         public string Name { get; set; }
+        [DisplayName("Descricao")]
         public string Description { get; set; }
 
     }

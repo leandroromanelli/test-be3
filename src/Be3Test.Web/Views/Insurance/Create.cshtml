@@ -1,0 +1,29 @@
+﻿@model Be3Test.Api.Models.InsuranceRequestModel
+
+@{
+    ViewBag.Title = "Convenios - Novo";
+}
+
+<h2>Convenios - Novo</h2>
+
+<form method="post">
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.TextBoxFor(model => model.Name, new {@class = "form-control"})
+            </th>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.TextBoxFor(model => model.Description, new {@class = "form-control"})
+            </th>
+        </tr>
+    </table>
+    <button class="btn btn-primary" value="Save">Salvar</button>
+</form>

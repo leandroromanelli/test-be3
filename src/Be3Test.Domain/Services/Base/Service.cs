@@ -27,24 +27,33 @@ namespace Be3Test.Domain.Services
 
         public void Delete(Guid id)
         {
-            var obj = _repository.Get().FirstOrDefault(x => x.Id.Equals(id));
+            var obj = _repository.Get().FirstOrDefault(x => x.Id == id);
 
-            if(obj != null)
-                _repository.Delete(obj);
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
+
+            _repository.Delete(obj);
         }
 
         public void Add(T obj)
         {
+            var dbObj = _repository.Get().FirstOrDefault(x => x.Id == obj.Id);
+
+            if (dbObj != null)
+                throw new ArgumentNullException(nameof(obj));
+
             _repository.Add(obj);
         }
 
         public void Update(T obj, Guid id)
         {
-            var dbObj = _repository.Get().FirstOrDefault(x => x.Id.Equals(id));
+            var dbObj = _repository.Get().FirstOrDefault(x => x.Id == id);
 
             if (dbObj == null)
                 throw new ArgumentNullException(nameof(obj));
 
+            obj.Id = id;
+            
             _repository.Update(obj);
         }
     }

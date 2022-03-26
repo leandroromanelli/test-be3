@@ -13,11 +13,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using System;
 using System.Text.Json.Serialization;
 
-namespace Be3Test.Api
+namespace Be3Test.Web
 {
     public class Startup
     {
@@ -28,36 +26,9 @@ namespace Be3Test.Api
 
         public IConfiguration Configuration { get; }
 
+        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options =>
-            {
-                options.AddPolicy(name: "All",
-                                  builder =>
-                                  {
-                                      builder.WithOrigins("*");
-                                  });
-            });
-
-            services.AddSwaggerGen(c =>
-            {
-
-                c.SwaggerDoc("v1",
-                    new OpenApiInfo()
-                    {
-                        Title = "be3 Test - Leandro Romanelli",
-                        Version = "v1",
-                        Description = "be3 Test - Leandro Romanelli",
-                        Contact = new OpenApiContact
-                        {
-                            Name = "Leandro Romanelli",
-                            Url = new Uri("https://github.com/leandroromanelli")
-                        }
-                    });
-
-                c.IncludeXmlComments("Be3Test.Api.xml");
-            });
-
             services.AddScoped<IPatientRepository, PatientRepository>();
             services.AddScoped<IPatientService, PatientService>();
 
@@ -66,7 +37,7 @@ namespace Be3Test.Api
 
             services.AddScoped<IInsuranceCardRepository, InsuranceCardRepository>();
             services.AddScoped<IInsuranceCardService, InsuranceCardService>();
-            
+
             services.AddScoped<IRepository<BaseEntity>, Repository<BaseEntity>>();
             services.AddScoped<IService<BaseEntity>, Service<BaseEntity>>();
 
@@ -83,7 +54,7 @@ namespace Be3Test.Api
 
                 cfg.CreateMap<BaseResponseModel, BaseEntity>();
                 cfg.CreateMap<BaseEntity, BaseResponseModel>();
-                
+
                 cfg.CreateMap<PatientRequestModel, Patient>();
                 cfg.CreateMap<Patient, PatientRequestModel>();
 
@@ -102,34 +73,36 @@ namespace Be3Test.Api
 
             services.AddDbContext<Be3TestContext>(options => options.UseInMemoryDatabase("Be3Test"));
 
-            services.AddControllers().AddJsonOptions(x =>
+            services.AddControllersWithViews().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
         }
 
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseCors("All");
-
-            app.UseSwagger();
-            
-            app.UseSwaggerUI(c => {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "be3 Test - Leandro Romanelli");
-            });
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
             app.UseRouting();
 
             app.UseAuthorization();
 
-            app.UseAuthentication();
-
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
