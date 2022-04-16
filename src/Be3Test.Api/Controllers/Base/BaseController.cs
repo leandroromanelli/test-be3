@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Be3Test.Api.Controllers.Base
 {
@@ -26,11 +28,11 @@ namespace Be3Test.Api.Controllers.Base
         }
 
         [HttpGet]
-        public ActionResult<List<Resp>> Get()
+        public async Task<ActionResult<List<Resp>>> Get(CancellationToken cancellationToken)
         {
             try
             {
-                return Ok(_mapper.Map<List<Resp>>(_service.List()));
+                return Ok(_mapper.Map<List<Resp>>(await _service.Get(cancellationToken)));
             }
             catch (Exception ex)
             {
@@ -39,11 +41,11 @@ namespace Be3Test.Api.Controllers.Base
         }
 
         [HttpGet("{id:guid}")]
-        public ActionResult<Resp> Get(Guid id)
+        public async Task<ActionResult<Resp>> Get(Guid id, CancellationToken cancellationToken)
         {
             try
             {
-                return Ok(_mapper.Map<Resp>(_service.Find(id)));
+                return Ok(_mapper.Map<Resp>(await _service.Get(id, cancellationToken)));
             }
             catch (Exception ex)
             {
@@ -53,11 +55,11 @@ namespace Be3Test.Api.Controllers.Base
 
 
         [HttpPost]
-        public ActionResult Add([FromBody] Req obj)
+        public async Task<ActionResult> Add([FromBody] Req obj, CancellationToken cancellationToken)
         {
             try
             {
-                _service.Add(_mapper.Map<E>(obj));
+                await _service.Add(_mapper.Map<E>(obj), cancellationToken);
                 return Ok();
             }
             catch (Exception ex)
@@ -67,11 +69,11 @@ namespace Be3Test.Api.Controllers.Base
         }
 
         [HttpDelete("{id:guid}")]
-        public ActionResult Delete(Guid id)
+        public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             try
             {
-                _service.Delete(id);
+                await _service.Delete(id, cancellationToken);
                 return Ok();
             }
             catch (Exception ex)
@@ -81,11 +83,11 @@ namespace Be3Test.Api.Controllers.Base
         }
 
         [HttpPut("{id:guid}")]
-        public ActionResult Update([FromBody] Req obj, Guid id)
+        public async Task<ActionResult> Update([FromBody] Req obj, Guid id, CancellationToken cancellationToken)
         {
             try
             {
-                _service.Update(_mapper.Map<E>(obj), id);
+                await _service.Update(_mapper.Map<E>(obj), id, cancellationToken);
                 return Ok();
             }
             catch (Exception ex)

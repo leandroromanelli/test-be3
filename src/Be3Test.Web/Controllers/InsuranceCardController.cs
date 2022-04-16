@@ -5,6 +5,8 @@ using Be3Test.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Be3Test.Web.Controllers
 {
@@ -27,17 +29,17 @@ namespace Be3Test.Web.Controllers
             _patientService = patientService;
         }
 
-        public ActionResult Create([FromQuery(Name = "patientId")]Guid patientId)
+        public async Task<ActionResult> Create([FromQuery(Name = "patientId")]Guid patientId, CancellationToken cancellationToken)
         {
-            ViewBag.Insurances = _mapper.Map<IEnumerable<InsuranceRequestModel>>(_insuranceService.List());
+            ViewBag.Insurances = _mapper.Map<IEnumerable<InsuranceRequestModel>>(await _insuranceService.Get(cancellationToken));
             
             return View(new InsuranceCardRequestModel() { PatientId = patientId });
         }
 
         [HttpPost]
-        public ActionResult Create(InsuranceCardRequestModel insuranceCardRequest)
+        public async Task<ActionResult> Create(InsuranceCardRequestModel insuranceCardRequest, CancellationToken cancellationToken)
         {
-            _service.Add(_mapper.Map<InsuranceCard>(insuranceCardRequest));
+            await _service.Add(_mapper.Map<InsuranceCard>(insuranceCardRequest), cancellationToken);
 
             return RedirectToRoute(new {controller = "Patient", action = "Edit", id = insuranceCardRequest.PatientId });
         }

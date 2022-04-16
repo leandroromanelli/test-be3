@@ -4,6 +4,8 @@ using Be3Test.Infra.Context;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Be3Test.Infra.Repositories
 {
@@ -16,13 +18,13 @@ namespace Be3Test.Infra.Repositories
             _context = context;
         }
 
-        public Patient GetComplete(Guid id)
+        public async Task<Patient> GetComplete(Guid id, CancellationToken cancellationToken)
         {
-            return _context.Patients
+            return await _context.Patients
                 .Where(patient => patient.Id == id)
                 .Include("InsuranceCards")
                 .Include("InsuranceCards.Insurance")
-                .FirstOrDefault();
+                .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Be3Test.Api.Controllers
 {
@@ -23,11 +25,11 @@ namespace Be3Test.Api.Controllers
         }
 
         [HttpPatch("{id:guid}")]
-        public ActionResult Update(Guid id, [FromBody] PatientRequestModel patient)
+        public async Task<ActionResult> Update(Guid id, [FromBody] PatientRequestModel patient, CancellationToken cancellationToken)
         {
             try
             {
-                _service.Update(_mapper.Map<Patient>(patient), id, patient.InsuranceCards.FirstOrDefault().InsuranceId);
+                await _service.Update(_mapper.Map<Patient>(patient), id, patient.InsuranceCards.FirstOrDefault().InsuranceId, cancellationToken);
                 return Ok();
             }
             catch (Exception ex)

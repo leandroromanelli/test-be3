@@ -1,9 +1,11 @@
 ﻿using Be3Test.Domain.Entities;
 using Be3Test.Domain.Interfaces.Services;
+using Be3Test.Domain.Interfaces.Specifications;
 using Be3Test.Domain.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Be3Test.Domain.Services
 {
@@ -15,46 +17,56 @@ namespace Be3Test.Domain.Services
             _repository = repository;
         }
 
-        public List<T> List()
+        public async Task<List<T>> Get(CancellationToken cancellationToken)
         {
-            return _repository.Get().ToList();
+            return await _repository.Get(cancellationToken);
         }
 
-        public T Find(Guid id)
+        public async Task<T> Get(Guid id, CancellationToken cancellationToken)
         {
-            return _repository.Get().FirstOrDefault(x => x.Id == id);
+            return await _repository.Get(id, cancellationToken);
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id, CancellationToken cancellationToken)
         {
-            var obj = _repository.Get().FirstOrDefault(x => x.Id == id);
+            var obj = await _repository.Get(id, cancellationToken);
 
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
 
-            _repository.Delete(obj);
+            await _repository.Delete(obj, cancellationToken);
         }
 
-        public void Add(T obj)
+        public async Task Add(T obj, CancellationToken cancellationToken)
         {
-            var dbObj = _repository.Get().FirstOrDefault(x => x.Id == obj.Id);
+            var dbObj = await _repository.Get(obj.Id, cancellationToken);
 
             if (dbObj != null)
                 throw new ArgumentNullException(nameof(obj));
 
-            _repository.Add(obj);
+            await _repository.Add(obj, cancellationToken);
         }
 
-        public void Update(T obj, Guid id)
+        public async Task Update(T obj, Guid id, CancellationToken cancellationToken)
         {
-            var dbObj = _repository.Get().FirstOrDefault(x => x.Id == id);
+            var dbObj = await _repository.Get(id, cancellationToken);
 
             if (dbObj == null)
                 throw new ArgumentNullException(nameof(obj));
 
             obj.Id = id;
             
-            _repository.Update(obj);
+            await _repository.Update(obj, cancellationToken);
+        }
+
+        public async Task<List<T>> FindMany(ISpecification<T> specification, CancellationToken cancellationToken)
+        {
+            return await _repository.FindMany(specification, cancellationToken);
+        }
+
+        public async Task<T> Find(ISpecification<T> specification, CancellationToken cancellationToken)
+        {
+            return await _repository.Find(specification, cancellationToken);
         }
     }
 }

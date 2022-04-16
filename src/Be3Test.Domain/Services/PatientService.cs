@@ -1,8 +1,11 @@
 ﻿using Be3Test.Domain.Entities;
 using Be3Test.Domain.Interfaces.Services;
 using Be3Test.Domain.Repositories;
+using Be3Test.Domain.Specifications;
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Be3Test.Domain.Services
 {
@@ -21,32 +24,32 @@ namespace Be3Test.Domain.Services
             _insuranceCardRepository = insuranceCardRepository;
         }
 
-        public new void Add(Patient patient)
+        public new async Task Add(Patient patient, CancellationToken cancellationToken)
         {
             if (patient == null || !patient.IsValid)
                 throw new ArgumentNullException(nameof(patient));
 
-            if (_repository.Get().FirstOrDefault(p => p.CPF == patient.CPF) != null)
+            if (await _repository.Find(new PatientSpecification(p => p.CPF == patient.CPF), cancellationToken) != null);
                 throw new ArgumentException("patient already exists");
 
-            _repository.Add(patient);
+            await _repository.Add(patient, cancellationToken);
         }
 
-        public new Patient Find(Guid id)
+        public new async Task<Patient> Get(Guid id, CancellationToken cancellationToken)
         {
-            return _repository.GetComplete(id);
+            return await _repository.GetComplete(id, cancellationToken);
         }
 
-        public void Update(Patient patient, Guid id, Guid? insuranceId)
+        public async Task Update(Patient patient, Guid id, Guid? insuranceId, CancellationToken cancellationToken)
         {
-            var dbPatient = _repository.GetComplete(id);
+            var dbPatient = await _repository.GetComplete(id, cancellationToken);
 
             if (dbPatient == null)
                 return;
 
             if (insuranceId != null && patient.InsuranceCards != null)
             {
-                var dbInsurance = _insuranceRepository.Get().FirstOrDefault(i => i.Id == insuranceId);
+                var dbInsurance = await _insuranceRepository.FindMany(new InsuranceSpecification(i => i.Id == insuranceId), cancellationToken);
 
                 if (dbInsurance == null)
                     throw new ArgumentNullException(nameof(insuranceId));
@@ -62,7 +65,7 @@ namespace Be3Test.Domain.Services
                     Validity = patient.InsuranceCards.FirstOrDefault().Validity
                 };
 
-                _insuranceCardRepository.Add(insuranceCard);
+                await _insuranceCardRepository.Add(insuranceCard, cancellationToken);
             }
 
             if (patient.BirthDate != new DateTime())
@@ -98,7 +101,7 @@ namespace Be3Test.Domain.Services
             if (!string.IsNullOrWhiteSpace(patient.UfRG))
                 dbPatient.UfRG = patient.UfRG;
 
-            _repository.Update(dbPatient);
+            await _repository.Update(dbPatient, cancellationToken);
         }
 
     }

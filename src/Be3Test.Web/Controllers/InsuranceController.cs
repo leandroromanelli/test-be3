@@ -4,6 +4,8 @@ using Be3Test.Domain.Entities;
 using Be3Test.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Be3Test.Web.Controllers
 {
@@ -13,28 +15,28 @@ namespace Be3Test.Web.Controllers
         private readonly IInsuranceService _service;
 
         public InsuranceController(IMapper mapper,
-                                       IInsuranceService service)
+                                   IInsuranceService service)
         {
             _mapper = mapper;
             _service = service;
         }
 
-        public ActionResult Create()
+        public async Task<ActionResult> Create(CancellationToken cancellationToken)
         {
             return View(new InsuranceRequestModel());
         }
 
         [HttpPost]
-        public ActionResult Create(InsuranceRequestModel insuranceRequest)
+        public async Task<ActionResult> Create(InsuranceRequestModel insuranceRequest, CancellationToken cancellationToken)
         {
-            _service.Add(_mapper.Map<Insurance>(insuranceRequest));
+            await _service.Add(_mapper.Map<Insurance>(insuranceRequest), cancellationToken);
 
             return RedirectToAction(nameof(Index));
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index(CancellationToken cancellationToken)
         {
-            return View(_mapper.Map<IEnumerable<InsuranceResponseModel>>(_service.List()));
+            return View(_mapper.Map<IEnumerable<InsuranceResponseModel>>(await _service.Get(cancellationToken)));
         }
 
     }
