@@ -1,5 +1,6 @@
 ﻿using Be3Test.Domain.Entities;
 using Be3Test.Domain.Interfaces.Services;
+using Be3Test.Domain.Interfaces.UnitOfWork;
 using Be3Test.Domain.Repositories;
 using Be3Test.Domain.Specifications;
 using System;
@@ -12,16 +13,10 @@ namespace Be3Test.Domain.Services
     public class PatientService : Service<Patient>, IPatientService
     {
         private readonly IPatientRepository _repository;
-        private readonly IInsuranceRepository _insuranceRepository;
-        private readonly IInsuranceCardRepository _insuranceCardRepository;
 
-        public PatientService(IPatientRepository repository,
-                              IInsuranceRepository insuranceRepository,
-                              IInsuranceCardRepository insuranceCardRepository) : base(repository)
+        public PatientService(IUnitOfWork unitOfWork) : base(unitOfWork, unitOfWork.PatientRepository)
         {
-            _repository = repository;
-            _insuranceRepository = insuranceRepository;
-            _insuranceCardRepository = insuranceCardRepository;
+            _repository = unitOfWork.PatientRepository;
         }
 
         public new async Task Add(Patient patient, CancellationToken cancellationToken)
@@ -29,10 +24,11 @@ namespace Be3Test.Domain.Services
             if (patient == null || !patient.IsValid)
                 throw new ArgumentNullException(nameof(patient));
 
-            if (await _repository.Find(new PatientSpecification(p => p.CPF == patient.CPF), cancellationToken) != null);
+            if (await _repository.Find(new PatientSpecification(p => p.CPF == patient.CPF), cancellationToken) != null)
                 throw new ArgumentException("patient already exists");
 
-            await _repository.Add(patient, cancellationToken);
+            await _unitOfWork.PatientRepository.Add(patient, cancellationToken);
+            await _unitOfWork.Save(cancellationToken);
         }
 
         public new async Task<Patient> Get(Guid id, CancellationToken cancellationToken)
@@ -42,14 +38,14 @@ namespace Be3Test.Domain.Services
 
         public async Task Update(Patient patient, Guid id, Guid? insuranceId, CancellationToken cancellationToken)
         {
-            var dbPatient = await _repository.GetComplete(id, cancellationToken);
+            var dbPatient = await _unitOfWork.PatientRepository.GetComplete(id, cancellationToken);
 
             if (dbPatient == null)
                 return;
 
             if (insuranceId != null && patient.InsuranceCards != null)
             {
-                var dbInsurance = await _insuranceRepository.FindMany(new InsuranceSpecification(i => i.Id == insuranceId), cancellationToken);
+                var dbInsurance = await _unitOfWork.InsuranceRepository.FindMany(new InsuranceSpecification(i => i.Id == insuranceId), cancellationToken);
 
                 if (dbInsurance == null)
                     throw new ArgumentNullException(nameof(insuranceId));
@@ -65,7 +61,7 @@ namespace Be3Test.Domain.Services
                     Validity = patient.InsuranceCards.FirstOrDefault().Validity
                 };
 
-                await _insuranceCardRepository.Add(insuranceCard, cancellationToken);
+                await _unitOfWork.InsuranceCardRepository.Add(insuranceCard, cancellationToken);
             }
 
             if (patient.BirthDate != new DateTime())
@@ -101,7 +97,9 @@ namespace Be3Test.Domain.Services
             if (!string.IsNullOrWhiteSpace(patient.UfRG))
                 dbPatient.UfRG = patient.UfRG;
 
-            await _repository.Update(dbPatient, cancellationToken);
+            await _unitOfWork.PatientRepository.Update(dbPatient, cancellationToken);
+
+            await _unitOfWork.Save(cancellationToken);
         }
 
     }

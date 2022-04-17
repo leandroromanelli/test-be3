@@ -3,10 +3,12 @@ using Be3Test.Api.Models;
 using Be3Test.Api.Models.Base;
 using Be3Test.Domain.Entities;
 using Be3Test.Domain.Interfaces.Services;
+using Be3Test.Domain.Interfaces.UnitOfWork;
 using Be3Test.Domain.Repositories;
 using Be3Test.Domain.Services;
 using Be3Test.Infra.Context;
 using Be3Test.Infra.Repositories;
+using Be3Test.Infra.UnitOfWork;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +31,8 @@ namespace Be3Test.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
             services.AddScoped<IPatientRepository, PatientRepository>();
             services.AddScoped<IPatientService, PatientService>();
 

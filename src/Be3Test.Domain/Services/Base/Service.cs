@@ -1,6 +1,7 @@
 ﻿using Be3Test.Domain.Entities;
 using Be3Test.Domain.Interfaces.Services;
 using Be3Test.Domain.Interfaces.Specifications;
+using Be3Test.Domain.Interfaces.UnitOfWork;
 using Be3Test.Domain.Repositories;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,11 @@ namespace Be3Test.Domain.Services
 {
     public class Service<T> : IService<T> where T : BaseEntity
     {
+        internal readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<T> _repository;
-        public Service(IRepository<T> repository)
+        public Service(IUnitOfWork unitOfWork, IRepository<T> repository)
         {
+            _unitOfWork = unitOfWork;
             _repository = repository;
         }
 
@@ -35,6 +38,7 @@ namespace Be3Test.Domain.Services
                 throw new ArgumentNullException(nameof(obj));
 
             await _repository.Delete(obj, cancellationToken);
+            await _unitOfWork.Save(cancellationToken);
         }
 
         public async Task Add(T obj, CancellationToken cancellationToken)
@@ -45,6 +49,7 @@ namespace Be3Test.Domain.Services
                 throw new ArgumentNullException(nameof(obj));
 
             await _repository.Add(obj, cancellationToken);
+            await _unitOfWork.Save(cancellationToken);
         }
 
         public async Task Update(T obj, Guid id, CancellationToken cancellationToken)
@@ -57,6 +62,7 @@ namespace Be3Test.Domain.Services
             obj.Id = id;
             
             await _repository.Update(obj, cancellationToken);
+            await _unitOfWork.Save(cancellationToken);
         }
 
         public async Task<List<T>> FindMany(ISpecification<T> specification, CancellationToken cancellationToken)

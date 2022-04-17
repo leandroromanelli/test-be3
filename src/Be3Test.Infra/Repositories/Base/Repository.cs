@@ -23,13 +23,11 @@ namespace Be3Test.Infra.Repositories
         public async Task Add(T entity, CancellationToken cancellationToken)
         {
             _context.Set<T>().Add(entity);
-            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task Delete(T entity, CancellationToken cancellationToken)
         {
             _context.Set<T>().Remove(entity);
-            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task<List<T>> FindMany(ISpecification<T> specification, CancellationToken cancellationToken)
@@ -56,7 +54,6 @@ namespace Be3Test.Infra.Repositories
         {
             _context.Entry(entity).State = EntityState.Modified;
             _context.Set<T>().Update(entity);
-            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }
